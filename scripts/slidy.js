@@ -1,3 +1,5 @@
+// vim: tabstop=2 shiftwidth=2 expandtab
+
 /* slidy.js
 
    Copyright (c) 2005-2013 W3C (MIT, ERCIM, Keio), All Rights Reserved.
@@ -448,7 +450,7 @@ var w3c_slidy = {
     this.clientX = touch.clientX;
     this.clientY = touch.clientY;
 
-    this.delta_x = this.delta_y = 0;
+    this.delta_x = this.delta_y = this.length_y = 0;
   },
 
   touchmove: function (e)
@@ -457,10 +459,11 @@ var w3c_slidy = {
     if (e.touches.length > 1)
       return;
 
-    e.preventDefault();
     var touch = e.touches[0];
     this.delta_x = touch.pageX - this.pageX;
     this.delta_y = touch.pageY - this.pageY;
+    this.length_y += Math.abs(touch.pageY - this.pageY);
+    return;
   },
 
   touchend: function (e)
@@ -469,27 +472,12 @@ var w3c_slidy = {
     if (e.touches.length > 1)
       return;
 
-    var delay = (new Date).getTime() - this.last_tap;
-    var dx = this.delta_x;
-    var dy = this.delta_y;
-    var abs_dx = Math.abs(dx);
-    var abs_dy = Math.abs(dy);
-
-    if (delay < 500 && (abs_dx > 100 || abs_dy > 100))
-    {
-      if (abs_dx > 0.5 * abs_dy)
-      {
-        e.preventDefault();
-
-        if (dx < 0)
-          w3c_slidy.next_slide(true);
-        else
-          w3c_slidy.previous_slide(true);
-      }
-      else if (abs_dy > 2 * abs_dx)
-      {
-        e.preventDefault();
-        w3c_slidy.toggle_table_of_contents();
+    console.log(this.delta_x + " my " + this.length_y);
+    if (Math.abs(this.delta_x) > Math.max(this.length_y, 100)) {
+      if (this.delta_x < 0) {
+        w3c_slidy.previous_slide(true);
+      } else {
+        w3c_slidy.next_slide(true);
       }
     }
   },
