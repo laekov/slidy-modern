@@ -67,7 +67,7 @@ var w3c_slidy = {
 
   size_index: 0,
   size_adjustment: 0,
-  sizes:  new Array("9pt", "10pt", "12pt", "16pt", "18pt", "20pt",
+  sizes:  new Array("9pt", "9pt", "9pt", "12pt", "16pt", "18pt", "20pt",
                     "22pt", "24pt", "26pt", "28pt", "30pt", "32pt"),
 
   // needed for efficient resizing
@@ -156,7 +156,7 @@ var w3c_slidy = {
 
     this.toc = this.table_of_contents();
 
-    this.add_initial_prompt();
+    // this.add_initial_prompt();
 
     // bind event handlers without interfering with custom page scripts
     // Tap events behave too weirdly to support clicks reliably on
@@ -472,11 +472,17 @@ var w3c_slidy = {
     if (e.touches.length > 1)
       return;
 
-    console.log(this.delta_x + " my " + this.length_y);
     if (Math.abs(this.delta_x) > Math.max(this.length_y, 100)) {
       if (this.delta_x < 0) {
         w3c_slidy.previous_slide(true);
       } else {
+        w3c_slidy.next_slide(true);
+      }
+    } else if (Math.abs(this.delta_x) < 50 && Math.abs(this.delta_y) < 50) {
+      if (this.pageX < window.innerWidth * .25) {
+        w3c_slidy.previous_slide(true);
+      } 
+      if (this.pageX > window.innerWidth * .75) {
         w3c_slidy.next_slide(true);
       }
     }
