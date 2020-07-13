@@ -11,6 +11,15 @@ div.slide {
 	font-size: 12pt;
 }
 
+.dot {
+	height: 25px;
+	width: 25px;
+	background-color: #fbb;
+	border-radius: 50%;
+	position: fixed;
+	z-index: 99 !important;
+}
+
 pre {
 	font-weight: normal;
 }

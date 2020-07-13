@@ -451,6 +451,16 @@ var w3c_slidy = {
     this.clientY = touch.clientY;
 
     this.delta_x = this.delta_y = this.length_y = 0;
+
+    if (this.dot === undefined) {
+      this.dot = document.createElement('span');
+      this.dot.setAttribute('class', 'dot');
+      document.body.append(this.dot);
+    }
+
+    this.dot.style.display = 'inline-block';
+    this.dot.style.left = touch.pageX + 'px';
+    this.dot.style.top = touch.pageY + 'px';
   },
 
   touchmove: function (e)
@@ -463,6 +473,11 @@ var w3c_slidy = {
     this.delta_x = touch.pageX - this.pageX;
     this.delta_y = touch.pageY - this.pageY;
     this.length_y += Math.abs(touch.pageY - this.pageY);
+
+    e.preventDefault();
+
+    this.dot.style.left = this.delta_x + this.pageX + 'px';
+    this.dot.style.top = this.delta_y + this.clientY - 30 + 'px';
     return;
   },
 
@@ -472,20 +487,29 @@ var w3c_slidy = {
     if (e.touches.length > 1)
       return;
 
-    if (Math.abs(this.delta_x) > Math.max(this.length_y, 100)) {
-      if (this.delta_x < 0) {
-        w3c_slidy.previous_slide(true);
-      } else {
-        w3c_slidy.next_slide(true);
-      }
-    } else if (Math.abs(this.delta_x) < 50 && Math.abs(this.delta_y) < 50) {
-      if (this.pageX < window.innerWidth * .25) {
-        w3c_slidy.previous_slide(true);
-      } 
-      if (this.pageX > window.innerWidth * .75) {
-        w3c_slidy.next_slide(true);
+    this.prev_tap = this.last_tap;
+    this.last_tap = (new Date).getTime();
+
+    var tap_delay = this.last_tap - this.prev_tap;
+
+    if (tap_delay < 1000) {
+      if (Math.abs(this.delta_x) > Math.max(this.length_y, 100)) {
+        if (this.delta_x < 0) {
+          w3c_slidy.previous_slide(true);
+        } else {
+          w3c_slidy.next_slide(true);
+        }
+      } else if (Math.abs(this.delta_x) < 50 && Math.abs(this.delta_y) < 50) {
+        if (this.pageX < window.innerWidth * .25) {
+          w3c_slidy.previous_slide(true);
+        } 
+        if (this.pageX > window.innerWidth * .75) {
+          w3c_slidy.next_slide(true);
+        }
       }
     }
+
+    this.dot.style.display = 'none';
   },
 
   // ### OBSOLETE ###
