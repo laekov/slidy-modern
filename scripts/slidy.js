@@ -436,9 +436,14 @@ var w3c_slidy = {
 
     var tap_delay = this.last_tap - this.prev_tap;
 
-    if (tap_delay <= 200)
+    this.allow_paging = (tap_delay > 200);
+
+    if (tap_delay <= 1000)
     {
       // double tap
+      this.move_mode = true;
+    } else {
+      this.move_mode = false;
     }
 
     var touch = e.touches[0];
@@ -452,32 +457,40 @@ var w3c_slidy = {
 
     this.delta_x = this.delta_y = this.length_y = 0;
 
-    if (this.dot === undefined) {
-      this.dot = document.createElement('span');
-      this.dot.setAttribute('class', 'dot');
-      document.body.append(this.dot);
-    }
+    if (!this.move_mode) {
+      if (this.dot === undefined) {
+        this.dot = document.createElement('span');
+        this.dot.setAttribute('class', 'dot');
+        document.body.append(this.dot);
+      }
 
-    this.dot.style.display = 'inline-block';
-    this.dot.style.left = touch.pageX + 'px';
-    this.dot.style.top = touch.pageY + 'px';
+      this.dot.style.display = 'inline-block';
+      this.dot.style.left = touch.pageX + 'px';
+      this.dot.style.top = touch.pageY + 'px';
+    }
   },
 
   touchmove: function (e)
   {
     // override native gestures for single touch
-    if (e.touches.length > 1)
+    if (e.touches.length > 2)
       return;
 
+    if (e.touches.length == 2) {
+      e.touches.pop();
+      return;
+    }
     var touch = e.touches[0];
     this.delta_x = touch.pageX - this.pageX;
     this.delta_y = touch.pageY - this.pageY;
     this.length_y += Math.abs(touch.pageY - this.pageY);
 
-    e.preventDefault();
+    if (!this.move_mode) {
+      e.preventDefault();
 
-    this.dot.style.left = this.delta_x + this.pageX + 'px';
-    this.dot.style.top = this.delta_y + this.clientY - 30 + 'px';
+      this.dot.style.left = this.delta_x + this.pageX + 'px';
+      this.dot.style.top = this.delta_y + this.clientY - 30 + 'px';
+    }
     return;
   },
 
@@ -492,19 +505,20 @@ var w3c_slidy = {
 
     var tap_delay = this.last_tap - this.prev_tap;
 
-    if (tap_delay < 1000) {
+    if (tap_delay < 1000) { 
       if (Math.abs(this.delta_x) > Math.max(this.length_y, 100)) {
         if (this.delta_x < 0) {
           w3c_slidy.previous_slide(true);
         } else {
           w3c_slidy.next_slide(true);
         }
-      } else if (Math.abs(this.delta_x) < 50 && Math.abs(this.delta_y) < 50) {
-        if (this.pageX < window.innerWidth * .25) {
-          w3c_slidy.previous_slide(true);
-        } 
-        if (this.pageX > window.innerWidth * .75) {
-          w3c_slidy.next_slide(true);
+      } else if (this.allow_paging) {
+        if (Math.abs(this.delta_x) < 50 && Math.abs(this.delta_y) < 50) {
+          if (this.pageX < window.innerWidth * .25) {
+            w3c_slidy.previous_slide(true);
+          } else if (this.pageX > window.innerWidth * .75) {
+            w3c_slidy.next_slide(true);
+          }
         }
       }
     }
@@ -2683,7 +2697,6 @@ var w3c_slidy = {
         !w3c_slidy.special_element(target) &&
         !target.onclick)
     {
-      w3c_slidy.next_slide(true);
       w3c_slidy.stop_propagation(e);
       e.cancel = true;
       e.returnValue = false;
