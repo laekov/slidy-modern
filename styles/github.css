@@ -18,6 +18,7 @@ div.slide {
 	border-radius: 50%;
 	position: fixed;
 	z-index: 99 !important;
+	opacity: 50%;
 }
 
 pre {

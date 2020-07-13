@@ -438,14 +438,6 @@ var w3c_slidy = {
 
     this.allow_paging = (tap_delay > 200);
 
-    if (tap_delay <= 1000)
-    {
-      // double tap
-      this.move_mode = true;
-    } else {
-      this.move_mode = false;
-    }
-
     var touch = e.touches[0];
 
     this.pageX = touch.pageX;
@@ -454,6 +446,13 @@ var w3c_slidy = {
     this.screenY = touch.screenY;
     this.clientX = touch.clientX;
     this.clientY = touch.clientY;
+
+    if (tap_delay <= 1000 && this.clientY > this.screenY / 1.5) {
+      // double tap
+      this.move_mode = true;
+    } else {
+      this.move_mode = false;
+    }
 
     this.delta_x = this.delta_y = this.length_y = 0;
 
@@ -521,9 +520,8 @@ var w3c_slidy = {
           }
         }
       }
+      this.dot.style.display = 'none';
     }
-
-    this.dot.style.display = 'none';
   },
 
   // ### OBSOLETE ###
