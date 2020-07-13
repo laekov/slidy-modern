@@ -199,7 +199,6 @@ code, tt {
   background-color: #f8f8f8;
   border-radius: 3px;
   font-family: Consolas, 'Liberation Mono', Courier, monospace;
-  font-size: 24px;
   color: #333333; }
 
 pre > code {
@@ -221,7 +220,6 @@ pre > code {
 pre {
   background-color: #f8f8f8;
   border: 1px solid #ccc;
-  font-size: 14px;
   line-height: 19px;
   overflow: auto;
   padding: 6px 10px;
